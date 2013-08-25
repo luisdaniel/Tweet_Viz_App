@@ -3,6 +3,7 @@ bin
 build
 include
 lib
+.env
 
 # python stuff
 *.pyc

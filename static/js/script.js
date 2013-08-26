@@ -11,7 +11,7 @@
 $(document).ready(function() { 
 	document.session = $('#session').val();
 	
-	setTimeout(getTweet, 100);
+	setTimeout(getTweet, 1000);
 
 
 function getTweet() {

@@ -13,6 +13,29 @@ from tweepy import Stream
 import simplejson as json
 
 
+
+from tornado.options import define
+define("port", default=5000, help="run on the given port", type=int)
+
+
+class Application(tornado.web.Application):
+    def __init__(self):
+        handlers = [
+            (r"/favicon.ico", FaviconHandler),
+            (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': 'static'}),
+            (r'/', WebHandler),
+            (r'/ws', WSHandler),
+        ]
+        settings = dict(
+            template_path=os.path.join(os.path.dirname(__file__), "templates"),
+            static_path=os.path.join(os.path.dirname(__file__), "static"),
+            debug=True,
+        )
+        tornado.web.Application.__init__(self, handlers, **settings)
+
+#application = tornado.web.Application(handlers, **settings)
+
+
 # websocket
 class FaviconHandler(tornado.web.RequestHandler):
     def get(self):
@@ -46,18 +69,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         print(msg)
         self.on_message(msg)
 
-handlers = [
-    (r"/favicon.ico", FaviconHandler),
-    (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': 'static'}),
-    (r'/', WebHandler),
-    (r'/ws', WSHandler),
-]
-
-settings = dict(
-    template_path=os.path.join(os.path.dirname(__file__), "static"),
-)
-
-application = tornado.web.Application(handlers, **settings)
 
 
 # new stream listener 
@@ -96,12 +107,24 @@ def OpenStream():
     stream = Stream(auth, l, gzip=True) 
     stream.filter(track=['obama'])
 
+def main():
+    tornado.options.parse_command_line()
+    threading.Thread(target=OpenStream).start()
+    http_server = tornado.httpserver.HTTPServer(Application())
+    http_server.listen(tornado.options.options.port)
 
+    # start it up
+    tornado.ioloop.IOLoop.instance().start()
+    
 
 if __name__ == "__main__":
-    threading.Thread(target=OpenStream).start()
-    http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(8888)
-    main_loop = tornado.ioloop.IOLoop.instance()
-#   main_loop.add_callback(OpenStream)
+    main()
     main_loop.start()
+    
+    
+
+
+
+
+
+

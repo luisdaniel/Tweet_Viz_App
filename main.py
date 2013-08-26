@@ -33,8 +33,6 @@ class Application(tornado.web.Application):
         )
         tornado.web.Application.__init__(self, handlers, **settings)
 
-#application = tornado.web.Application(handlers, **settings)
-
 
 # websocket
 class FaviconHandler(tornado.web.RequestHandler):
@@ -96,10 +94,10 @@ class StdOutListener(StreamListener, WSHandler):
 
 def OpenStream():
     #twitter auth
-    consumer_key = "muBHyzsmbgb0Aa9xjXF0wg"
-    consumer_secret = "bJ97B7PdGY46amtEhvzzN9vH2XhyvxRmzDggxFfKvc"
-    access_token = "16931374-TusvFdBgBKYp8Nn1zvKN0X1daxuMu51FrO7Z39u0U"
-    access_token_secret = "EyR8cLkaRtFxwM90dct5ZDU89JtlMjJSqkTskdLHg"
+    consumer_key = os.environ.get('CONSUMER_KEY')
+    consumer_secret = os.environ.get('CONSUMER_SECRET')
+    access_token = os.environ.get('ACCESS_TOKEN')
+    access_token_secret = os.environ.get('ACCESS_TOKEN_SECRET')
 
     l = StdOutListener()
     auth = OAuthHandler(consumer_key, consumer_secret)

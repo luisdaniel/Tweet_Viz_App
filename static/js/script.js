@@ -16,22 +16,16 @@ $(document).ready(function() {
 
 
 function getTweet() {
-	alert("in here");
-	var host = 'ws://localhost:8000/';
+	console.log("in here");
+	var host = 'ws://localhost:8000/ws';
 	var websocket = new WebSocket(host);
 	websocket.onopen = function (evt) { };
 	websocket.onmessage = function(evt) {
-		alert($.parseJSON(evt.data)['tweet_text'])
+		console.log($.parseJSON(evt.data)['tweet_text'])
 		$('.tweet').html($.parseJSON(evt.data)['tweet_text']); 
 	};
 	websocket.onerror = function (evt) { };
 }
-
-
-
-
-
-
 
 
 

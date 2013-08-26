@@ -12,6 +12,7 @@ $(document).ready(function() {
 	document.session = $('#session').val();
 	
 	setTimeout(getTweet, 1000);
+});
 
 
 function getTweet() {

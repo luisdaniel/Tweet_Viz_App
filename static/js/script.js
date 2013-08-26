@@ -16,6 +16,7 @@ $(document).ready(function() {
 
 
 function getTweet() {
+	alert("in here");
 	var host = 'ws://localhost:8000/';
 	var websocket = new WebSocket(host);
 	websocket.onopen = function (evt) { };

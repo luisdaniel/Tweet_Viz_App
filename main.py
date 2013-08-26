@@ -6,6 +6,12 @@ import tornado.web
 import threading
 import time
 import datetime
+# tweepy
+from tweepy.streaming import StreamListener
+from tweepy import OAuthHandler
+from tweepy import Stream
+import simplejson as json
+
 
 # websocket
 class FaviconHandler(tornado.web.RequestHandler):
@@ -14,7 +20,7 @@ class FaviconHandler(tornado.web.RequestHandler):
 
 class WebHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("websockets.html")
+        self.render("main.html")
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     connections = []
@@ -26,10 +32,10 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         self.write_message("Hi, client: connection is made ...")
 
     def on_message(self, message):
-        print 'message received: \"%s\"' % message
-        self.write_message("Echo: \"" + message + "\"")
-        if (message == "green"):
-            self.write_message("green!")
+        pass
+
+    #def callback(self, tweet):
+    #    self.write_message('{"tweet":"%s"}' % status.text)
 
     def on_close(self):
         self.connections.remove(self)
@@ -54,13 +60,6 @@ settings = dict(
 application = tornado.web.Application(handlers, **settings)
 
 
-# tweepy
-from tweepy.streaming import StreamListener
-from tweepy import OAuthHandler
-from tweepy import Stream
-import simplejson as json
-
-
 # new stream listener 
 class StdOutListener(StreamListener, WSHandler):
     """ A listener handles tweets are the received from the stream. 
@@ -70,11 +69,10 @@ class StdOutListener(StreamListener, WSHandler):
 
     # tweet handling
     def on_status(self, status):
-        print('@%s: %s' % (status.user.screen_name, status.text))
-        handler = WSHandler()
-        handler.on_message('hello world') # <--- THIS is where i want to send a msg to WSHandler.on_message
+        print(status.user.screen_name.encode('utf-8') + ": " + status.text.encode('utf-8'))
+        #self.on_message('hello world') # <--- THIS is where i want to send a msg to WSHandler.on_message
         for connection in WSHandler.connections:
-            connection.write_message(status.text)
+            connection.write_message('{"tweet_text": status.text}')
 
     # limit handling
     def on_limit(self, track):
